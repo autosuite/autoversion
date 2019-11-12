@@ -1,0 +1,26 @@
+{
+  "name": "autoversion",
+  "version": "0.0.0",
+  "description": "GitHub Action that performs automatic versioning of popular configuration management meta files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teaminkling/autoversion.git"
+  },
+  "keywords": [
+    "github",
+    "action"
+  ],
+  "author": "Inkling Interactive",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/teaminkling/autoversion/issues"
+  },
+  "homepage": "https://github.com/teaminkling/autoversion#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.0"
+  }
+}
