@@ -1,7 +1,0 @@
-[package]
-name = "autoversion"
-version = "0.0.0"
-authors = ["Thomas Wang <thomas@teaminkling.com>"]
-edition = "2018"
-
-[dependencies]

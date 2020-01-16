@@ -1,4 +1,4 @@
-name: autoversioner
+name: autoversion
 description: Automation of versioning in popular package management tools as a GitHub Action.
 author: Inkling Interactive
 branding:
@@ -7,8 +7,8 @@ branding:
 inputs:
   managers:
     required: true
-    description: The manager(s) you want to use with Autoversioner, comma-delimited.
+    description: The manager(s) you want to use with Autoversion, comma-delimited.
     default: npm
 runs:
   using: node12
-  main: index.js
+  main: main.js
