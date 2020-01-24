@@ -39,10 +39,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: teaminkling/autoversion@master
+      - uses: autosuite/autoversion@master
         with:
           managers: npm, cargo
-      - uses: teaminkling/autocommit@master
+      - uses: autosuite/autocommit@master
       - uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
