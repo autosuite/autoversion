@@ -61,6 +61,20 @@ var FRAMEWORKS_TO_FILES_AND_REGEXES = {
         regex: /(version = ")(\d\.\d\.\d)(")/
     }
 };
+/**
+ * From the tag `string`, return the SemVer part of it.
+ *
+ * @param description the tag `string`
+ */
+function extractVersion(description) {
+    /* All tags must contain SemVer versions, and we need to extract the version. */
+    var rawMatch = description.match(/\d\.\d\.\d/);
+    if (!rawMatch || !(rawMatch.length == 1)) {
+        core.warning("The latest tag should be/contain a SemVer version. We couldn't find it; assuming [0.0.0].");
+        return "0.0.0";
+    }
+    return rawMatch[0].toString();
+}
 function run() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -71,15 +85,7 @@ function run() {
                     return [4 /*yield*/, exec.exec("git describe --abbrev=0", [], {
                             listeners: {
                                 stdout: function (data) {
-                                    /* All tags must contain SemVer versions, and we need to extract the version. */
-                                    var rawMatch = data.toString().match(/\d\.\d\.\d/);
-                                    var version = "0.0.0";
-                                    if (!rawMatch || !(rawMatch.length == 1)) {
-                                        core.info("The latest tag should be/contain a SemVer version. We couldn't find it; assuming [0.0.0].");
-                                    }
-                                    else {
-                                        version = rawMatch[0].toString();
-                                    }
+                                    var version = extractVersion(data.toString());
                                     /* Iterate all of the frameworks provided by the Action's configuration. */
                                     core.getInput("managers").split(",").forEach(function (manager) {
                                         var cleanedManager = manager.trim();

@@ -29,24 +29,33 @@ const FRAMEWORKS_TO_FILES_AND_REGEXES: { [key: string]: FileWithRegex } = {
     }
 };
 
+/**
+ * From the tag `string`, return the SemVer part of it.
+ *
+ * @param description the tag `string`
+ */
+function extractVersion(description: string): string {
+    /* All tags must contain SemVer versions, and we need to extract the version. */
+
+    const rawMatch: RegExpMatchArray | null = description.match(/\d\.\d\.\d/);
+
+    if (!rawMatch || !(rawMatch.length == 1)) {
+        core.warning(
+            "The latest tag should be/contain a SemVer version. We couldn't find it; assuming [0.0.0]."
+        );
+
+        return "0.0.0";
+    }
+
+    return rawMatch[0].toString();
+}
+
 async function run() {
     await exec.exec("git fetch --tags");
     await exec.exec("git describe --abbrev=0", [], {
         listeners: {
             stdout: (data: Buffer) => {
-                /* All tags must contain SemVer versions, and we need to extract the version. */
-
-                const rawMatch: RegExpMatchArray | null = data.toString().match(/\d\.\d\.\d/);
-
-                let version: string = "0.0.0";
-
-                if (!rawMatch || !(rawMatch.length == 1)) {
-                    core.info(
-                        "The latest tag should be/contain a SemVer version. We couldn't find it; assuming [0.0.0]."
-                    );
-                } else {
-                    version = rawMatch[0].toString();
-                }
+                const version: string = extractVersion(data.toString());
 
                 /* Iterate all of the frameworks provided by the Action's configuration. */
 
@@ -58,7 +67,7 @@ async function run() {
                         core.setFailed(`Autoversioning script does not understand manager: [${cleanedManager}].`);
                     }
 
-                    const newContent = fs
+                    const newContent: string = fs
                         .readFileSync(metainfo.file)
                         .toString()
                         .replace(metainfo.regex, `$1${version}$3`);
