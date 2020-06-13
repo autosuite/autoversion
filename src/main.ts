@@ -40,12 +40,9 @@ async function run() {
             core.setFailed(`Autoversioning script does not understand manager: [${manager}].`);
         }
 
-        autolib.rewriteFileContentsWithReplacements(metainfo.file, [
-            new autolib.ReplacementMap(
-                metainfo.regex,
-                `$1${latestStableVersion.toString()}$3`,
-            ),
-        ]);
+        autolib.rewriteFileContentsWithReplacement(
+            metainfo.file, metainfo.regex, `$1${latestStableVersion.toString()}$3`,
+        );
     });
 }
 
