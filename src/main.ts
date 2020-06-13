@@ -1,7 +1,6 @@
-import * as fs from 'fs';
-
 import * as core from '@actions/core';
-import * as exec from '@actions/exec';
+
+import * as autolib from 'autolib';
 
 /**
  * A file with a regular expression used in this context to represent a management file and the regular expression
@@ -29,55 +28,24 @@ const FRAMEWORKS_TO_FILES_AND_REGEXES: { [key: string]: FileWithRegex } = {
     },
 };
 
-/**
- * From the tag `string`, return the SemVer part of it.
- *
- * @param description the tag `string`
- */
-function extractVersion(description: string): string {
-    /* All tags must contain SemVer versions, and we need to extract the version. The v-prefix is optional. */
-
-    const rawMatch: RegExpMatchArray | null = description.match(/(?<=v)?\d\.\d\.\d/);
-
-    if (!rawMatch || !(rawMatch.length == 1)) {
-        core.warning(
-            "The latest tag should be/contain a SemVer version. We couldn't find it; assuming [0.0.0]."
-        );
-
-        return "0.0.0";
-    }
-
-    return rawMatch[0].toString();
-}
-
 async function run() {
-    await exec.exec("git fetch --tags");
-    await exec.exec("git describe --abbrev=0", [], {
-        listeners: {
-            stdout: (data: Buffer) => {
-                const version: string = extractVersion(data.toString());
+    const latestStableVersion: autolib.SemVer = autolib.findLatestVersionFromGitTags(true);
 
-                /* Iterate all of the frameworks provided by the Action's configuration. */
+    /* Iterate all of the frameworks provided by the Action's configuration. */
 
-                core.getInput("managers").split(",").forEach((manager: string) => {
-                    const cleanedManager: string = manager.trim();
-                    const metainfo: FileWithRegex = FRAMEWORKS_TO_FILES_AND_REGEXES[cleanedManager];
+    core.getInput("managers").split(",").map((manage: string) => manage.trim()).forEach((manager: string) => {
+        const metainfo: FileWithRegex = FRAMEWORKS_TO_FILES_AND_REGEXES[manager];
 
-                    if (!metainfo) {
-                        core.setFailed(`Autoversioning script does not understand manager: [${cleanedManager}].`);
-                    }
+        if (!metainfo) {
+            core.setFailed(`Autoversioning script does not understand manager: [${manager}].`);
+        }
 
-                    const newContent: string = fs.readFileSync(
-                        metainfo.file
-                    ).toString().replace(metainfo.regex, `$1${version}$3`);
-
-                    fs.writeFileSync(metainfo.file, newContent);
-                });
-            },
-            stderr: (data: Buffer) => {
-                core.error(data.toString());
-            }
-        },
+        autolib.rewriteFileContentsWithReplacements(metainfo.file, [
+            new autolib.ReplacementMap(
+                metainfo.regex,
+                `$1${latestStableVersion.toString()}$3`,
+            ),
+        ]);
     });
 }
 
