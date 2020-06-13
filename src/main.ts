@@ -11,7 +11,7 @@ interface FileWithRegex {
     /** The package file for a framework. */
     file: string,
     /** A regular expression for the file contents to find its SemVer version. */
-    regex: RegExp
+    regex: RegExp,
 };
 
 /**
@@ -26,7 +26,7 @@ const FRAMEWORKS_TO_FILES_AND_REGEXES: { [key: string]: FileWithRegex } = {
     "cargo": {
         file: "Cargo.toml",
         regex: /(version = ")(\d\.\d\.\d)(")/
-    }
+    },
 };
 
 /**
@@ -35,9 +35,9 @@ const FRAMEWORKS_TO_FILES_AND_REGEXES: { [key: string]: FileWithRegex } = {
  * @param description the tag `string`
  */
 function extractVersion(description: string): string {
-    /* All tags must contain SemVer versions, and we need to extract the version. */
+    /* All tags must contain SemVer versions, and we need to extract the version. The v-prefix is optional. */
 
-    const rawMatch: RegExpMatchArray | null = description.match(/\d\.\d\.\d/);
+    const rawMatch: RegExpMatchArray | null = description.match(/(?<=v)?\d\.\d\.\d/);
 
     if (!rawMatch || !(rawMatch.length == 1)) {
         core.warning(
@@ -67,10 +67,9 @@ async function run() {
                         core.setFailed(`Autoversioning script does not understand manager: [${cleanedManager}].`);
                     }
 
-                    const newContent: string = fs
-                        .readFileSync(metainfo.file)
-                        .toString()
-                        .replace(metainfo.regex, `$1${version}$3`);
+                    const newContent: string = fs.readFileSync(
+                        metainfo.file
+                    ).toString().replace(metainfo.regex, `$1${version}$3`);
 
                     fs.writeFileSync(metainfo.file, newContent);
                 });

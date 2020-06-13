@@ -59,7 +59,7 @@ var FRAMEWORKS_TO_FILES_AND_REGEXES = {
     "cargo": {
         file: "Cargo.toml",
         regex: /(version = ")(\d\.\d\.\d)(")/
-    }
+    },
 };
 /**
  * From the tag `string`, return the SemVer part of it.
@@ -67,8 +67,8 @@ var FRAMEWORKS_TO_FILES_AND_REGEXES = {
  * @param description the tag `string`
  */
 function extractVersion(description) {
-    /* All tags must contain SemVer versions, and we need to extract the version. */
-    var rawMatch = description.match(/\d\.\d\.\d/);
+    /* All tags must contain SemVer versions, and we need to extract the version. The v-prefix is optional. */
+    var rawMatch = description.match(/(?<=v)?\d\.\d\.\d/);
     if (!rawMatch || !(rawMatch.length == 1)) {
         core.warning("The latest tag should be/contain a SemVer version. We couldn't find it; assuming [0.0.0].");
         return "0.0.0";
@@ -93,10 +93,7 @@ function run() {
                                         if (!metainfo) {
                                             core.setFailed("Autoversioning script does not understand manager: [" + cleanedManager + "].");
                                         }
-                                        var newContent = fs
-                                            .readFileSync(metainfo.file)
-                                            .toString()
-                                            .replace(metainfo.regex, "$1" + version + "$3");
+                                        var newContent = fs.readFileSync(metainfo.file).toString().replace(metainfo.regex, "$1" + version + "$3");
                                         fs.writeFileSync(metainfo.file, newContent);
                                     });
                                 },

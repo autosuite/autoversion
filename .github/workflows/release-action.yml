@@ -1,6 +1,9 @@
-name: CI for TypeScript GitHub Action
+name: Release Action
 
-on: [push]
+on:
+  push:
+    tags:
+      - pre-v*.*.*
 
 jobs:
   build:

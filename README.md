@@ -18,8 +18,8 @@
 
 Simple Action that increments the version to the most recent tag found when called. This supports:
 
-- Rust/Cargo (`cargo`)
-- Node/NPM (`npm`)
+- Rust/Cargo (`cargo`).
+- Node/NPM (`npm`).
 
 Feel free to open a pull request if you would like to support additional frameworks!
 
