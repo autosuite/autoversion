@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 
-import * as autolib from 'autolib';
+import * as autolib from '@teaminkling/autolib';
 
 /**
  * A file with a regular expression used in this context to represent a management file and the regular expression
@@ -29,7 +29,7 @@ const FRAMEWORKS_TO_FILES_AND_REGEXES: { [key: string]: FileWithRegex } = {
 };
 
 async function run() {
-    const latestStableVersion: autolib.SemVer = autolib.findLatestVersionFromGitTags(true);
+    const latestStableVersion: autolib.SemVer = await autolib.findLatestVersionFromGitTags(true);
 
     /* Iterate all of the frameworks provided by the Action's configuration. */
 

@@ -43,9 +43,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var fs = __importStar(require("fs"));
 var core = __importStar(require("@actions/core"));
-var exec = __importStar(require("@actions/exec"));
+var autolib = __importStar(require("@teaminkling/autolib"));
 ;
 /**
  * Mapping of supported frameworks to their files and regular expressions used to replace. The 2nd group to capture
@@ -61,49 +60,22 @@ var FRAMEWORKS_TO_FILES_AND_REGEXES = {
         regex: /(version = ")(\d\.\d\.\d)(")/
     },
 };
-/**
- * From the tag `string`, return the SemVer part of it.
- *
- * @param description the tag `string`
- */
-function extractVersion(description) {
-    /* All tags must contain SemVer versions, and we need to extract the version. The v-prefix is optional. */
-    var rawMatch = description.match(/(?<=v)?\d\.\d\.\d/);
-    if (!rawMatch || !(rawMatch.length == 1)) {
-        core.warning("The latest tag should be/contain a SemVer version. We couldn't find it; assuming [0.0.0].");
-        return "0.0.0";
-    }
-    return rawMatch[0].toString();
-}
 function run() {
     return __awaiter(this, void 0, void 0, function () {
+        var latestStableVersion;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, exec.exec("git fetch --tags")];
+                case 0: return [4 /*yield*/, autolib.findLatestVersionFromGitTags(true)];
                 case 1:
-                    _a.sent();
-                    return [4 /*yield*/, exec.exec("git describe --abbrev=0", [], {
-                            listeners: {
-                                stdout: function (data) {
-                                    var version = extractVersion(data.toString());
-                                    /* Iterate all of the frameworks provided by the Action's configuration. */
-                                    core.getInput("managers").split(",").forEach(function (manager) {
-                                        var cleanedManager = manager.trim();
-                                        var metainfo = FRAMEWORKS_TO_FILES_AND_REGEXES[cleanedManager];
-                                        if (!metainfo) {
-                                            core.setFailed("Autoversioning script does not understand manager: [" + cleanedManager + "].");
-                                        }
-                                        var newContent = fs.readFileSync(metainfo.file).toString().replace(metainfo.regex, "$1" + version + "$3");
-                                        fs.writeFileSync(metainfo.file, newContent);
-                                    });
-                                },
-                                stderr: function (data) {
-                                    core.error(data.toString());
-                                }
-                            },
-                        })];
-                case 2:
-                    _a.sent();
+                    latestStableVersion = _a.sent();
+                    /* Iterate all of the frameworks provided by the Action's configuration. */
+                    core.getInput("managers").split(",").map(function (manage) { return manage.trim(); }).forEach(function (manager) {
+                        var metainfo = FRAMEWORKS_TO_FILES_AND_REGEXES[manager];
+                        if (!metainfo) {
+                            core.setFailed("Autoversioning script does not understand manager: [" + manager + "].");
+                        }
+                        autolib.rewriteFileContentsWithReplacement(metainfo.file, metainfo.regex, "$1" + latestStableVersion.toString() + "$3");
+                    });
                     return [2 /*return*/];
             }
         });

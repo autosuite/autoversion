@@ -1,11 +1,9 @@
 {
   "name": "autoversion",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "GitHub Action that performs automatic versioning of popular configuration management meta files.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/autosuite/autoversion.git"
@@ -23,7 +21,7 @@
   "dependencies": {
     "@actions/core": "^1.2.0",
     "@actions/exec": "^1.0.3",
-    "@teaminkling/autolib": "^0.1.1"
+    "@teaminkling/autolib": "^0.1.2"
   },
   "devDependencies": {
     "@types/node": "^13.1.7",
