@@ -1,14 +1,12 @@
 # Autoversion
 
-| Summary           | Badge                                              |
-| ----------------- | -------------------------------------------------- |
-| Release Stability | ![Autobadger Release Stability][release-stability] |
-| Latest Release    | ![Autobadger Latest Release][latest-release]       |
-| Code Quality      | [![Maintainability][quality-image]][quality-link]  |
-| Code Coverage     | [![Test Coverage][coverage-image]][coverage-link]  |
+![Autobadge Stable Release][stable-release]
+![Autobadge Development Release][development-release]
+[![Maintainability][quality-image]][quality-link]
+[![Test Coverage][coverage-image]][coverage-link]
 
-[release-stability]: https://img.shields.io/static/v1?label=latest&message=0.0.0&color=purple
-[latest-release]: https://img.shields.io/static/v1?label=stability&message=unusable&color=red
+[stable-release]: https://img.shields.io/static/v1?label=latest&message=v0.1.0&color=purple
+[development-release]: https://img.shields.io/static/v1?label=in-dev&message=v0.1.0&color=red
 [quality-image]: https://api.codeclimate.com/v1/badges/72874b4fc4e4703d3a25/maintainability
 [quality-link]: https://codeclimate.com/github/autosuite/autoversion/maintainability
 [coverage-image]: https://api.codeclimate.com/v1/badges/72874b4fc4e4703d3a25/test_coverage
@@ -16,7 +14,7 @@
 
 ## Introduction
 
-Simple Action that increments the version to the most recent tag found when called. This supports:
+This is a Simple Action that increments the version to the most recent tag found when called. This supports:
 
 - Rust/Cargo (`cargo`).
 - Node/NPM (`npm`).
@@ -58,10 +56,13 @@ jobs:
 
 ## Caveats
 
-There is obviously only one set of version tags in any `git` repository, meaning you cannot do something like have a frontend and backend of an application in the same repository while they have different versions. You can, however, force them to always keep the same version, even if they do not change between different tags.
+There is obviously only one set of version tags in any `git` repository, meaning you cannot do something like have a
+frontend and backend of an application in the same repository while they have different versions. You can, however,
+force them to always keep the same version, even if they do not change between different tags.
 
 ## Documentation
 
-If you would like to contribute to this project, please read our [contributors documentation](CONTRIBUTING.md) and our [code of conduct](CODE_OF_CONDUCT.md).
+If you would like to contribute to this project, please read our [contributors documentation](CONTRIBUTING.md) and
+our [code of conduct](CODE_OF_CONDUCT.md).
 
 The license we use for this project is defined in [the license file](LICENSE).
