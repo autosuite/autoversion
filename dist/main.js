@@ -35,6 +35,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -43,42 +46,53 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var replace_in_file_1 = __importDefault(require("replace-in-file"));
 var core = __importStar(require("@actions/core"));
 var autolib = __importStar(require("@teaminkling/autolib"));
-;
 /**
  * Mapping of supported frameworks to their files and regular expressions used to replace. The 2nd group to capture
  * is what is replaced, and all of these require three capturing groups.
+ *
+ * Just add to this list if you want to support more package metadata types.
  */
 var FRAMEWORKS_TO_FILES_AND_REGEXES = {
     "npm": {
         file: "package.json",
-        regex: /("version": ")(\d\.\d\.\d)(")/
+        regex: /(?<key>"version": ")(?<version>\d\.\d\.\d)(?<tail>")/
     },
     "cargo": {
         file: "Cargo.toml",
-        regex: /(version = ")(\d\.\d\.\d)(")/
+        regex: /(?<key>version = ")(?<version>\d\.\d\.\d)(?<tail>")/
     },
 };
-function run() {
+function runAction() {
     return __awaiter(this, void 0, void 0, function () {
-        var latestStableVersion;
+        var latestStableVersion, managersInConfigText, managersInConfig, cleanedManagersInConfig;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, autolib.findLatestVersionFromGitTags(true)];
                 case 1:
                     latestStableVersion = _a.sent();
-                    /* Iterate all of the frameworks provided by the Action's configuration. */
-                    core.getInput("managers").split(",").map(function (manage) { return manage.trim(); }).forEach(function (manager) {
+                    managersInConfigText = core.getInput("managers");
+                    managersInConfig = managersInConfigText.split(",");
+                    cleanedManagersInConfig = managersInConfig.map(String.prototype.trim);
+                    cleanedManagersInConfig.forEach(function (manager) {
                         var metainfo = FRAMEWORKS_TO_FILES_AND_REGEXES[manager];
                         if (!metainfo) {
                             core.setFailed("Autoversioning script does not understand manager: [" + manager + "].");
                         }
-                        autolib.rewriteFileContentsWithReplacement(metainfo.file, metainfo.regex, "$1" + latestStableVersion.toString() + "$3");
+                        /* Perform an in-group regex replace. */
+                        replace_in_file_1.default.sync({
+                            files: metainfo.file,
+                            from: metainfo.regex,
+                            to: "$1" + latestStableVersion + "$3",
+                        });
                     });
                     return [2 /*return*/];
             }
         });
     });
 }
-run();
+var actionRunner = runAction();
+/* Handle action promise. */
+actionRunner.then(function () { });
