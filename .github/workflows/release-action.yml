@@ -19,7 +19,7 @@ jobs:
           npx tsc
         env:
           CI: true
-      - uses: autosuite/autocommit@master
+      - uses: autosuite/autocommit@main
         with:
           commit-message: "Automatically updated uncompiled TS w/ compiled JS"
       - uses: ad-m/github-push-action@v0.5.0
@@ -44,33 +44,15 @@ jobs:
           CI: true
       - name: Self-Test
         uses: ./
-      - uses: autosuite/autocommit@master
-      - uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-  document:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v2.0.0
-        with:
-          fetch-depth: 0
-      - run: git pull --rebase || echo "You are pushing a tag, not a branch."
-      - uses: autosuite/autobadge@0.1.0
-      - uses: autosuite/autolog@0.2.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          github-repository: ${{ github.repository }}
-      - uses: autosuite/autocommit@master
-      - uses: ad-m/github-push-action@master
+      - uses: autosuite/autocommit@main
+      - uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   utility:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.0.0
-      - uses: autosuite/automilestone@master
+      - uses: autosuite/automilestone@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-repository: ${{ github.repository }}
-          prefix: rc-
